@@ -43,6 +43,7 @@ public class EventController {
             return "events/create";
         }
         EventData.add(newEvent);
+        model.addAttribute("types", EventType.values());
         return "redirect:";
 
     }
