@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head th:fragment="head">
     <meta charset="UTF-8"/>
-    <title>Coding Events</title>
+    <title th:text="${title}">Coding Events</title>
 
 <!--    <script th:src="@{/script.js}"></script>-->
 <!--    <link th:href="@{/styles.css}" rel="stylesheet">-->
@@ -17,6 +17,7 @@
         <li class="nav-item"><a class="nav-link" href="/events">All Events</a></li>
         <li class="nav-item"><a class="nav-link" href="/events/create">Create Events</a></li>
         <li class="nav-item"><a class="nav-link" href="/events/delete">Delete Events</a></li>
+        <li class="nav-item"><a class="nav-link" href="/eventCategories/create">Create Category</a></li>
     </ul>
 </nav>
 
