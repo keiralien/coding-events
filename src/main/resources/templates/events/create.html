@@ -13,20 +13,21 @@
             </label><br>
             <p class="error" th:errors="${event.name}"></p>
             <label>Description
-                <input th:field="${event.description}" class="form-control"/>
+                <input th:field="${event.eventDetails.description}" class="form-control"/>
             </label>
-            <p class="error" th:errors="${event.description}"></p>
+            <p class="error" th:errors="${event.eventDetails.description}"></p>
             <label>Contact Email
-                <input th:field="${event.contactEmail}" class="form-control"/>
+                <input th:field="${event.eventDetails.contactEmail}" class="form-control"/>
             </label>
-            <p class="error" th:errors="${event.contactEmail}"></p>
-            <label>Event Type
-                <select th:field="${event.type}">
-                    <option th:each="type : ${types}"
-                            th:text="${type.displayName}"
-                            th:value="${type}">
+            <p class="error" th:errors="${event.eventDetails.contactEmail}"></p>
+            <label>Event Category
+                <select th:field="${event.eventCategory}">
+                    <option th:each="category : ${categories}"
+                            th:text="${category.name}"
+                            th:value="${category.id}">
                     </option>
                 </select>
+                <p class="error" th:errors="${event.eventCategory}"></p>
             </label>
         </div>
             <input type="Submit" value="Create Event" class="btn btn-success"/>

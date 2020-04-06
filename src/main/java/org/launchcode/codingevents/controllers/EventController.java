@@ -1,9 +1,9 @@
 package org.launchcode.codingevents.controllers;
 
-import org.launchcode.codingevents.data.EventData;
+import org.launchcode.codingevents.data.EventCategoryRepository;
 import org.launchcode.codingevents.data.EventRepository;
 import org.launchcode.codingevents.models.Event;
-import org.launchcode.codingevents.models.EventType;
+import org.launchcode.codingevents.models.EventCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,27 +11,41 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("events")
 public class EventController {
 
     @Autowired
-    private EventRepository EventRepo;
+    private EventRepository eventRepo;
+
+    @Autowired
+    private EventCategoryRepository eventCategoryRepository;
 
     @GetMapping
-    public String displayAllEvents(Model model) {
-        model.addAttribute("events", EventRepo.findAll());
-        return "events/index";
+    public String displayEvents(@RequestParam (required = false) Integer categoryId, Model model) {
+        if(categoryId == null) {
+            model.addAttribute("title", "All Events");
+            model.addAttribute("events", eventRepo.findAll());
+        } else {
+            Optional<EventCategory> result = eventCategoryRepository.findById(categoryId);
+            if(result.isPresent()) {
+                EventCategory category = result.get();
+                model.addAttribute("title", "Events in category: " + category.getName());
+                model.addAttribute("events", category.getEvents());
+            } else {
+                model.addAttribute("title", "Invalid Category Id: " + categoryId);
+            }
+        }
+            return "events/index";
     }
 
     // lives at /events/create
     @GetMapping("create")
     public String renderCreateEventForm(Model model) {
         model.addAttribute(new Event());
-        model.addAttribute("types", EventType.values());
+        model.addAttribute("categories", eventCategoryRepository.findAll());
         return "events/create";
     }
 
@@ -47,8 +61,8 @@ public class EventController {
         if(errors.hasErrors()) {
             return "events/create";
         }
-        EventRepo.save(newEvent);
-        model.addAttribute("types", EventType.values());
+        eventRepo.save(newEvent);
+        model.addAttribute("categories", eventCategoryRepository.findAll());
         return "redirect:";
 
     }
@@ -56,7 +70,7 @@ public class EventController {
     @GetMapping("delete")
     public String displayDeleteEvent(Model model) {
         model.addAttribute("title", "Delete Events");
-        model.addAttribute("events", EventRepo.findAll());
+        model.addAttribute("events", eventRepo.findAll());
         return "events/delete";
     }
 
@@ -64,16 +78,23 @@ public class EventController {
     public String deleteEvent(@RequestParam(required = false) int[] eventIds) {
         if(eventIds != null) {
             for (int id : eventIds) {
-                EventRepo.deleteById(id);
+                eventRepo.deleteById(id);
             }
         }
         return "redirect:";
     }
 
+    @GetMapping("details/{eventId}")
+    public String displayEventDetails(Model model, @PathVariable int eventId) {
+        model.addAttribute("title", "Event Details");
+        model.addAttribute("event", eventRepo.findById(eventId));
+        return "events/details";
+    }
+
     @GetMapping("edit/{eventId}")
     public String displayEditEvent(Model model, @PathVariable int eventId) {
-        model.addAttribute("title","Edit Event " + EventRepo.returnName(eventId));
-        model.addAttribute("event", EventRepo.findById(eventId));
+        model.addAttribute("title","Edit Event " + eventRepo.returnName(eventId));
+        model.addAttribute("event", eventRepo.findById(eventId));
         return "events/edit";
     }
 
